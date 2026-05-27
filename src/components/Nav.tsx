@@ -11,6 +11,7 @@ export default function Nav() {
           <a href="#profile" className="hover:text-ink transition">Profile</a>
           <a href="#match" className="hover:text-ink transition">Matchmaking</a>
           <a href="#odds" className="hover:text-ink transition">Odds</a>
+          <a href="#pricing" className="hover:text-ink transition">Pricing</a>
           <a href="#faq" className="hover:text-ink transition">FAQ</a>
         </nav>
         <a

@@ -1,14 +1,18 @@
-import { useMemo, useState } from "react";
-import { BOXERS, type Boxer } from "../data/boxers";
-import { proposeMatch } from "../lib/matchmaking";
+import { useState } from "react";
+import type { Boxer } from "../data/boxers";
+import { useAthletes, useMatch } from "../lib/useApi";
 import Avatar from "./Avatar";
 import { SectionLabel } from "./HowItWorks";
 
 export default function MatchmakingDemo() {
-  const [primaryId, setPrimaryId] = useState<string>(BOXERS[0].id);
-  const primary = BOXERS.find(b => b.id === primaryId)!;
+  const { data: boxers, loading: loadingBoxers, error: boxersErr } = useAthletes();
+  const [primaryId, setPrimaryId] = useState<string | null>(null);
 
-  const result = useMemo(() => proposeMatch(primary, BOXERS), [primary]);
+  // Default selection to the first boxer once the list arrives.
+  const effectivePrimaryId = primaryId ?? boxers?.[0]?.id ?? null;
+  const { data: match, loading: loadingMatch } = useMatch(effectivePrimaryId);
+
+  const primary = boxers?.find(b => b.id === effectivePrimaryId) ?? null;
 
   return (
     <section id="match" className="relative py-24">
@@ -19,48 +23,58 @@ export default function MatchmakingDemo() {
         </h2>
         <p className="mt-3 text-muted max-w-2xl">
           Ranked by absolute rating delta, then weight-class distance, then availability.
-          Cancellations are routed to the next-best automatically — your training week doesn't collapse.
+          Live matchmaking served by our Cloudflare Worker → D1.
         </p>
 
         {/* Primary selector */}
-        <div className="mt-10 rounded-2xl border border-white/10 bg-card p-5">
+        <div className="mt-10 rounded-2xl border border-white/10 bg-card p-5 min-h-[88px]">
           <div className="text-xs uppercase tracking-widest text-muted mb-3">You are…</div>
-          <div className="flex gap-3 overflow-x-auto pb-2 -mx-1 px-1">
-            {BOXERS.map(b => (
-              <BoxerChip
-                key={b.id}
-                boxer={b}
-                active={b.id === primaryId}
-                onClick={() => setPrimaryId(b.id)}
-              />
-            ))}
-          </div>
-        </div>
-
-        {/* Results */}
-        <div className="mt-6 grid lg:grid-cols-5 gap-4">
-          <div className="lg:col-span-2">
-            <Label>Primary opponent</Label>
-            <MatchCard
-              you={primary}
-              other={result.opponent}
-              ratingDelta={result.opponent.rating - primary.rating}
-              accent
-            />
-          </div>
-          <div className="lg:col-span-3">
-            <Label>Auto-selected backups (if opponent cancels)</Label>
-            <div className="grid sm:grid-cols-3 gap-3">
-              {result.backups.map((b, i) => (
-                <BackupCard
+          {loadingBoxers && <SkeletonChips />}
+          {boxersErr && <div className="text-rose-400 text-sm">Couldn't load athletes — {boxersErr.message}</div>}
+          {boxers && (
+            <div className="flex gap-3 overflow-x-auto pb-2 -mx-1 px-1">
+              {boxers.map(b => (
+                <BoxerChip
                   key={b.id}
-                  rank={i + 1}
-                  other={b}
-                  ratingDelta={b.rating - primary.rating}
+                  boxer={b}
+                  active={b.id === effectivePrimaryId}
+                  onClick={() => setPrimaryId(b.id)}
                 />
               ))}
             </div>
-          </div>
+          )}
+        </div>
+
+        {/* Results */}
+        <div className="mt-6 grid lg:grid-cols-5 gap-4 min-h-[260px]">
+          {(loadingMatch || !match || !primary) ? (
+            <SkeletonResult />
+          ) : (
+            <>
+              <div className="lg:col-span-2">
+                <Label>Primary opponent</Label>
+                <MatchCard
+                  you={primary}
+                  other={match.opponent}
+                  ratingDelta={match.ratingDelta}
+                  accent
+                />
+              </div>
+              <div className="lg:col-span-3">
+                <Label>Auto-selected backups (if opponent cancels)</Label>
+                <div className="grid sm:grid-cols-3 gap-3">
+                  {match.backups.map((b, i) => (
+                    <BackupCard
+                      key={b.id}
+                      rank={i + 1}
+                      other={b}
+                      ratingDelta={b.rating - primary.rating}
+                    />
+                  ))}
+                </div>
+              </div>
+            </>
+          )}
         </div>
       </div>
     </section>
@@ -69,6 +83,29 @@ export default function MatchmakingDemo() {
 
 function Label({ children }: { children: React.ReactNode }) {
   return <div className="text-xs uppercase tracking-widest text-muted mb-2">{children}</div>;
+}
+
+function SkeletonChips() {
+  return (
+    <div className="flex gap-3 overflow-hidden">
+      {Array.from({ length: 6 }).map((_, i) => (
+        <div key={i} className="h-10 w-40 rounded-full bg-white/5 animate-pulse shrink-0" />
+      ))}
+    </div>
+  );
+}
+
+function SkeletonResult() {
+  return (
+    <>
+      <div className="lg:col-span-2 h-56 rounded-2xl bg-white/5 animate-pulse" />
+      <div className="lg:col-span-3 grid sm:grid-cols-3 gap-3">
+        {Array.from({ length: 3 }).map((_, i) => (
+          <div key={i} className="h-44 rounded-xl bg-white/5 animate-pulse" />
+        ))}
+      </div>
+    </>
+  );
 }
 
 function BoxerChip({ boxer, active, onClick }: { boxer: Boxer; active: boolean; onClick: () => void }) {
