@@ -1,29 +1,18 @@
-import Nav from "./components/Nav";
-import Hero from "./components/Hero";
-import HowItWorks from "./components/HowItWorks";
-import ProfilePreview from "./components/ProfilePreview";
-import MatchmakingDemo from "./components/MatchmakingDemo";
-import OddsPreview from "./components/OddsPreview";
-import Pricing from "./components/Pricing";
-import FAQ from "./components/FAQ";
-import Waitlist from "./components/Waitlist";
-import Footer from "./components/Footer";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+import HomePage from "./pages/HomePage";
+import LoginPage from "./pages/LoginPage";
+import VerifyPage from "./pages/VerifyPage";
+import MembersPage from "./pages/MembersPage";
 
 export default function App() {
   return (
-    <div className="min-h-screen flex flex-col">
-      <Nav />
-      <main className="flex-1">
-        <Hero />
-        <HowItWorks />
-        <ProfilePreview />
-        <MatchmakingDemo />
-        <OddsPreview />
-        <Pricing />
-        <FAQ />
-        <Waitlist />
-      </main>
-      <Footer />
-    </div>
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<HomePage />} />
+        <Route path="/login" element={<LoginPage />} />
+        <Route path="/verify" element={<VerifyPage />} />
+        <Route path="/app" element={<MembersPage />} />
+      </Routes>
+    </BrowserRouter>
   );
 }

@@ -23,6 +23,14 @@ jobs:
         run: npm ci
 
       - name: Build
+        env:
+          # Baked into the SPA at build time. Both secrets are optional — if
+          # missing, the build still succeeds but the affected features degrade:
+          #   VITE_TURNSTILE_SITE_KEY missing -> Turnstile widget shows warning
+          #   VITE_PUBLIC_READ_TOKEN  missing -> read endpoints require login
+          VITE_API_BASE: https://gloveup-api.cfpe397.workers.dev
+          VITE_TURNSTILE_SITE_KEY: ${{ secrets.TURNSTILE_SITE_KEY }}
+          VITE_PUBLIC_READ_TOKEN: ${{ secrets.PUBLIC_READ_TOKEN }}
         run: npm run build
 
       - name: Deploy to Cloudflare Pages

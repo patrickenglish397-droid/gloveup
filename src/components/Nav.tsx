@@ -1,4 +1,12 @@
+import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
+import { getSession } from "../lib/auth";
+
 export default function Nav() {
+  // Re-read on mount so the CTA reflects login state after a verify redirect.
+  const [hasSession, setHasSession] = useState(false);
+  useEffect(() => { setHasSession(!!getSession()); }, []);
+
   return (
     <header className="sticky top-0 z-50 backdrop-blur-md bg-canvas/70 border-b border-white/5">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 py-3 flex items-center justify-between">
@@ -14,12 +22,21 @@ export default function Nav() {
           <a href="#pricing" className="hover:text-ink transition">Pricing</a>
           <a href="#faq" className="hover:text-ink transition">FAQ</a>
         </nav>
-        <a
-          href="#waitlist"
-          className="text-sm font-semibold px-4 py-2 rounded-full bg-accent text-white hover:bg-accent/90 transition shadow-lg shadow-accent/20"
-        >
-          Join the waitlist
-        </a>
+        {hasSession ? (
+          <Link
+            to="/app"
+            className="text-sm font-semibold px-4 py-2 rounded-full bg-accent text-white hover:bg-accent/90 transition shadow-lg shadow-accent/20"
+          >
+            Members area
+          </Link>
+        ) : (
+          <Link
+            to="/login"
+            className="text-sm font-semibold px-4 py-2 rounded-full bg-accent text-white hover:bg-accent/90 transition shadow-lg shadow-accent/20"
+          >
+            Sign in
+          </Link>
+        )}
       </div>
     </header>
   );

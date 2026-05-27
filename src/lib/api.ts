@@ -1,8 +1,5 @@
 import type { Boxer } from "../data/boxers";
-
-const API_BASE =
-  (import.meta.env.VITE_API_BASE as string | undefined) ??
-  "https://gloveup-api.cfpe397.workers.dev";
+import { apiFetch } from "./auth";
 
 type ApiAthlete = {
   id: string;
@@ -45,7 +42,7 @@ function toBoxer(a: ApiAthlete): Boxer {
 }
 
 export async function fetchAthletes(): Promise<Boxer[]> {
-  const res = await fetch(`${API_BASE}/api/athletes`);
+  const res = await apiFetch("/api/athletes");
   if (!res.ok) throw new Error(`athletes failed: ${res.status}`);
   const json = (await res.json()) as { athletes: ApiAthlete[] };
   // Preserve the seed ordering (b1, b2, …) for predictable demos.
@@ -62,7 +59,7 @@ export type ApiMatchProposal = {
 };
 
 export async function fetchMatch(primaryId: string): Promise<ApiMatchProposal> {
-  const res = await fetch(`${API_BASE}/api/match/propose?primaryId=${encodeURIComponent(primaryId)}`);
+  const res = await apiFetch(`/api/match/propose?primaryId=${encodeURIComponent(primaryId)}`);
   if (!res.ok) throw new Error(`match failed: ${res.status}`);
   const j = (await res.json()) as {
     primary: ApiAthlete;
