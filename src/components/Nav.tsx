@@ -29,8 +29,8 @@ function Logo() {
     <svg width="28" height="28" viewBox="0 0 32 32" className="text-accent">
       <defs>
         <linearGradient id="glove" x1="0" y1="0" x2="1" y2="1">
-          <stop offset="0%" stopColor="#10b981" />
-          <stop offset="100%" stopColor="#84cc16" />
+          <stop offset="0%" stopColor="#ef4444" />
+          <stop offset="100%" stopColor="#f43f5e" />
         </linearGradient>
       </defs>
       <path

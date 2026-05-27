@@ -6,7 +6,7 @@ export default function PhoneMockup() {
     <div className="relative mx-auto" style={{ width: 280, height: 580 }}>
       {/* Glow */}
       <div className="absolute inset-0 -m-10 rounded-[60px] blur-3xl opacity-50"
-           style={{ background: "radial-gradient(closest-side, rgba(16,185,129,0.35), transparent 70%)" }} />
+           style={{ background: "radial-gradient(closest-side, rgba(239,68,68,0.35), transparent 70%)" }} />
       {/* Phone frame */}
       <div className="relative w-full h-full rounded-[44px] bg-zinc-900 border border-white/10 shadow-2xl overflow-hidden">
         {/* Notch */}
@@ -41,7 +41,7 @@ function Screen1() {
     <ScreenBase style={{ animation: "screenCycle1 8s ease-in-out infinite" }}>
       <div className="text-[10px] uppercase tracking-widest text-muted">Profile</div>
       <div className="flex items-center gap-3 mt-2">
-        <div className="w-12 h-12 rounded-full" style={{ background: "conic-gradient(from 0deg, #10b981, #84cc16, #10b981)" }} />
+        <div className="w-12 h-12 rounded-full" style={{ background: "conic-gradient(from 0deg, #ef4444, #f43f5e, #ef4444)" }} />
         <div>
           <div className="font-semibold text-sm">Mia Okafor</div>
           <div className="text-[10px] text-muted">Lightweight · Manchester</div>
